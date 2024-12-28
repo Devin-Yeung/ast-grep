@@ -102,6 +102,9 @@ impl<D: Doc> Root<D> {
   }
 
   pub fn do_many_edits(&mut self, edits: Vec<Edit<D>>) -> Result<(), TSParseError> {
+    // edits should be applied in non-decreasing order
+    let mut edits = edits;
+    edits.sort_by(|a, b| b.position.cmp(&a.position));
     let source = self.doc.get_source_mut();
     let input_edits: Vec<_> = edits
       .iter()
