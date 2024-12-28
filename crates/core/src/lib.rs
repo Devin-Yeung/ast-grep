@@ -49,6 +49,11 @@ impl<D: Doc> AstGrep<D> {
     Ok(self)
   }
 
+  pub fn edit_many(&mut self, edits: Vec<Edit<D::Source>>) -> Result<&mut Self, TSParseError> {
+    self.inner.do_many_edits(edits)?;
+    Ok(self)
+  }
+
   pub fn replace<M: Matcher<D::Lang>, R: Replacer<D>>(
     &mut self,
     pattern: M,

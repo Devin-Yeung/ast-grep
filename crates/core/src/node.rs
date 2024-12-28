@@ -101,6 +101,19 @@ impl<D: Doc> Root<D> {
     Ok(())
   }
 
+  pub fn do_many_edits(&mut self, edits: Vec<Edit<D>>) -> Result<(), TSParseError> {
+    let source = self.doc.get_source_mut();
+    let input_edits: Vec<_> = edits
+      .iter()
+      .map(|e| perform_edit(&mut self.inner, source, e))
+      .collect();
+    for edit in input_edits {
+      self.inner.edit(&edit);
+    }
+    self.inner = self.doc.parse(Some(&self.inner))?;
+    Ok(())
+  }
+
   /// Adopt the tree_sitter as the descendant of the root and return the wrapped sg Node.
   /// It assumes `inner` is the under the root and will panic at dev build if wrong node is used.
   pub fn adopt<'r>(&'r self, inner: tree_sitter::Node<'r>) -> Node<'r, D> {
